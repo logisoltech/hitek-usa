@@ -7,6 +7,9 @@ import { CiShoppingCart, CiHeart } from 'react-icons/ci';
 import { openSans } from '../Font/font';
 import { useCart } from '../Providers/CartProvider';
 
+// Exchange rate: PKR to USD (static rate: 283 PKR = 1 USD)
+const EXCHANGE_RATE = 1 / 283;
+
 const LED = () => {
   const scrollContainerRef = useRef(null);
   const { addToCart } = useCart();
@@ -139,10 +142,11 @@ const LED = () => {
                     type="button"
                     onClick={(event) => {
                       event.preventDefault();
+                      const pricePKR = Number(String(product.price).replace(/[^0-9.-]/g, '')) || 0;
                       addToCart({
                         id: `led-${index}`,
                         name: product.name,
-                        price: Number(String(product.price).replace(/[^0-9.-]/g, '')) || 0,
+                        price: pricePKR * EXCHANGE_RATE, // Convert PKR to USD
                         image: product.image,
                         type: 'led',
                       });
@@ -173,9 +177,13 @@ const LED = () => {
                   </div>
                   <h3 className="text-sm font-semibold text-gray-900 mb-2 line-clamp-2">{product.name}</h3>
                   <div className="flex items-baseline gap-2 mt-auto">
-                    <span className="text-base font-bold text-gray-900">Rs. {product.price}</span>
+                    <span className="text-base font-bold text-gray-900">
+                      ${(Number(String(product.price).replace(/[^0-9.-]/g, '')) * EXCHANGE_RATE).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
                     {product.oldPrice && (
-                      <span className="text-sm text-gray-400 line-through">Rs. {product.oldPrice}</span>
+                      <span className="text-sm text-gray-400 line-through">
+                        ${(Number(String(product.oldPrice).replace(/[^0-9.-]/g, '')) * EXCHANGE_RATE).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
                     )}
                   </div>
                 </div>
